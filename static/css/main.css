@@ -1,0 +1,17 @@
+body {
+    /*margin-top: 60px;
+    margin-bottom: 40px;*/
+}
+.navbar {
+    margin-bottom: 20px;
+}
+footer {
+    margin-top: 40px;
+}
+.fs-6 {
+    font-size: 1.08rem !important;
+}
+
+.top-bar, .featured-text{
+        background-color: beige;
+}

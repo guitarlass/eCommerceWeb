@@ -1,0 +1,24 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends 'base.html' %}
+{% block title %}Your To Do Lists : Login{% endblock %}
+
+{% block content %}
+<style>
+  .form-signin {
+    max-width: 330px;
+    padding: 1rem;
+  }
+</style>
+<main class="form-signin w-100 m-auto">
+    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <p class=flash>{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {{ render_form(form, novalidate=True) }}
+</main>
+{% endblock %}

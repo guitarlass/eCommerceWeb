@@ -3,23 +3,6 @@
 
 {% block content %}
 <div class="container my-4">
-    <!-- Featured Categories -->
-<!--    <div class="row">-->
-<!--        <div class="col-md-12">-->
-<!--            <h2>Featured Categories</h2>-->
-<!--            <div class="row text-center">-->
-<!--                <div class="col-md-4">-->
-<!--                    <a href="#" class="btn btn-outline-primary btn-lg">Books</a>-->
-<!--                </div>-->
-<!--                <div class="col-md-4">-->
-<!--                    <a href="#" class="btn btn-outline-primary btn-lg">TV</a>-->
-<!--                </div>-->
-<!--                <div class="col-md-4">-->
-<!--                    <a href="#" class="btn btn-outline-primary btn-lg">Fun Items</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 
     <div class="album py-5 bg-body-tertiary">
     <div class="container">
@@ -67,19 +50,31 @@
     </div>
   </div>
 
-    <!-- Featured Product -->
-    <div class="row my-5">
+ <!-- Featured Product -->
+    <div class="container mt-5">
         <div class="col-md-12">
-            <h2>Featured</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>Marlin's Beard</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vitae eros eget tellus tristique bibendum.</p>
-                </div>
-                <div class="col-md-6">
-                    <img src="{{ url_for('static', filename='images/funtoy1.jpeg') }}" class="img-fluid" alt="Featured Product">
+            <h2 class="featured-text text-center py-2">Featured</h2>
+        <div class="row">
+
+            <!-- Product Details -->
+            <div class="col-md-6">
+                <h2>Product Title</h2>
+                <p class="fs-6"><strong>Price: Rs 1000.00</strong></p>
+
+                <!-- Product Description -->
+                <div class="mt-4">
+                    <h5>Description</h5>
+                    <p>
+                        This is the description of the product. It provides details about the product's features, usage, and specifications.
+                    </p>
                 </div>
             </div>
+
+             <div class="col-md-6">
+                <img src="{{ url_for('static', filename='images/funtoy1.jpeg') }}" alt="Product Image" class="img-fluid">
+            </div>
+
+        </div>
         </div>
     </div>
 

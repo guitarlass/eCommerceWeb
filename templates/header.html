@@ -1,16 +1,21 @@
 <header>
-        <div class="top-bar">
+        <div class="top-bar py-2">
             <div class="container">
                 <div class="row justify-content-end">
-                    <div class="col-auto">
-                        <span>Hello Ron!</span>
+                    {% if user %}<div class="col-auto">
+                        <span>Hello {{user.email}}!</span>
                     </div>
                     <div class="col-auto">
                         <a href="/cart">Cart (0)</a>
                     </div>
                     <div class="col-auto">
-                        <a href="/logout">Logout</a>
+                        <a href="{{ url_for('logout')}}">Logout</a>
                     </div>
+                    {% else %}
+                    <div class="col-auto">
+                        <a href="{{ url_for('login')}}">Login</a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -20,11 +25,13 @@
             <div class="row align-items-center">
                 <!-- Logo -->
                 <div class="col-md-4">
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="img-fluid">
+                    <a href="{{ url_for('home') }}">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="img-fluid">
+                    </a>
                 </div>
                 <!-- Site Name -->
                 <div class="col-md-8 text-right">
-                    <h1>Merlin's Beard E-Com</h1>
+                    <h1>Merlin's Beard E-Commerce Web Store</h1>
                 </div>
             </div>
         </div>
