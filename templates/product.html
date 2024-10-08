@@ -7,16 +7,16 @@
     <div class="row">
         <!-- Product Image -->
         <div class="col-md-6">
-            <img src="{{ url_for('static', filename='images/product.jpg') }}" alt="Product Image" class="img-fluid">
+            <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}" class="img-fluid">
         </div>
 
         <!-- Product Details -->
         <div class="col-md-6">
-            <h2>Product Title</h2>
-            <p class="fs-6"><strong>Price: Rs 1000.00</strong></p>
+            <h2>{{ product.name }}</h2>
+            <p class="fs-6"><strong>Price: Rs {{ product.price }}</strong></p>
 
             <!-- Quantity and Add to Cart -->
-            <form>
+            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
                 <div class="mb-3">
                     <label for="quantity" class="form-label">Quantity</label>
                     <input type="number" id="quantity" name="quantity" class="form-control" min="1" value="1" style="width: 100px;">
@@ -28,10 +28,11 @@
             <div class="mt-4">
                 <h5>Description</h5>
                 <p>
-                    This is the description of the product. It provides details about the product's features, usage, and specifications.
+                    {{ product.description }}
                 </p>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

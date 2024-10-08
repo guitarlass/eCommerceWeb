@@ -2,11 +2,12 @@
         <div class="top-bar py-2">
             <div class="container">
                 <div class="row justify-content-end">
-                    {% if user %}<div class="col-auto">
-                        <span>Hello {{user.email}}!</span>
+                    {% if current_user.is_authenticated %}
+                    <div class="col-auto">
+                        <span>Hello {{ current_user.name }}!</span>
                     </div>
                     <div class="col-auto">
-                        <a href="/cart">Cart (0)</a>
+                        <a href="{{ url_for('cart')}}">Cart ({% if 'cart' in session: %}{{ session.get('cart') | length }}{% else %}0{% endif %})</a>
                     </div>
                     <div class="col-auto">
                         <a href="{{ url_for('logout')}}">Logout</a>

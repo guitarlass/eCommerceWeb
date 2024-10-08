@@ -1,6 +1,6 @@
 {% from "bootstrap5/form.html" import render_form %}
 {% extends 'base.html' %}
-{% block title %}Merlin's Beard: Login{% endblock %}
+{% block title %}Merlin's Beard: Register Account{% endblock %}
 
 {% block content %}
 <style>
@@ -10,7 +10,7 @@
   }
 </style>
 <main class="form-signin w-100 m-auto">
-    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+    <h1 class="h3 mb-3 fw-normal">Register with Merlin's Beard</h1>
 
       {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -20,6 +20,6 @@
         {% endif %}
       {% endwith %}
       {{ render_form(form, novalidate=True) }}
-  <p>If you are not a user please <a href="{{ url_for('register') }}">register.</a></p>
+    <p>If you are already a member <a href="{{ url_for('login') }}">login.</a></p>
 </main>
 {% endblock %}

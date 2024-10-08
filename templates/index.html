@@ -5,76 +5,92 @@
 <div class="container my-4">
 
     <div class="album py-5 bg-body-tertiary">
-    <div class="container">
+        <div class="container">
 
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
-        <div class="col">
-          <div class="card shadow-sm">
-            <img class="bd-placeholder-img card-img-top" src="{{ url_for('static', filename='images/books.jpeg') }}" width="100%" height="225" role="img" aria-label="Placeholder: Thumbnail" />
-            <div class="card-body">
-                <h3>Books</h3>
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-             <div class="d-flex justify-content-between align-items-center">
-                <button type="button" class="btn btn-primary w-100">View</button>
-             </div>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm">
-            <img class="bd-placeholder-img card-img-top" src="{{ url_for('static', filename='images/Merlin.jpeg') }}" width="100%" height="225" role="img" aria-label="Placeholder: Thumbnail" />
-            <div class="card-body">
-                <h3>Tv</h3>
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-             <div class="d-flex justify-content-between align-items-center">
-                <button type="button" class="btn btn-primary w-100">View</button>
-             </div>
-            </div>
-          </div>
-        </div>
-          <div class="col">
-          <div class="card shadow-sm">
-            <img class="bd-placeholder-img card-img-top" src="{{ url_for('static', filename='images/funtoy2.jpg') }}" width="100%" height="225" role="img" aria-label="Placeholder: Thumbnail" />
-            <div class="card-body">
-                <h3>Fun Items</h3>
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-             <div class="d-flex justify-content-between align-items-center">
-                <button type="button" class="btn btn-primary w-100">View</button>
-             </div>
-            </div>
-          </div>
-        </div>
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <img class="bd-placeholder-img card-img-top"
+                             src="{{ url_for('static', filename='images/books.jpeg') }}" width="100%" height="225"
+                             role="img" aria-label="Placeholder: Thumbnail"/>
+                        <div class="card-body">
+                            <h3>Books</h3>
+                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
+                                additional content. This content is a little bit longer.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn btn-primary w-100">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <img class="bd-placeholder-img card-img-top"
+                             src="{{ url_for('static', filename='images/Merlin.jpeg') }}" width="100%" height="225"
+                             role="img" aria-label="Placeholder: Thumbnail"/>
+                        <div class="card-body">
+                            <h3>Tv</h3>
+                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
+                                additional content. This content is a little bit longer.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn btn-primary w-100">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <img class="bd-placeholder-img card-img-top"
+                             src="{{ url_for('static', filename='images/funtoy2.jpg') }}" width="100%" height="225"
+                             role="img" aria-label="Placeholder: Thumbnail"/>
+                        <div class="card-body">
+                            <h3>Fun Items</h3>
+                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
+                                additional content. This content is a little bit longer.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn btn-primary w-100">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      </div>
+            </div>
+        </div>
     </div>
-  </div>
 
- <!-- Featured Product -->
+    <!-- Featured Product -->
     <div class="container mt-5">
         <div class="col-md-12">
             <h2 class="featured-text text-center py-2">Featured</h2>
-        <div class="row">
+            <div class="row">
 
-            <!-- Product Details -->
-            <div class="col-md-6">
-                <h2>Product Title</h2>
-                <p class="fs-6"><strong>Price: Rs 1000.00</strong></p>
+                {% if featured %}
+                <!-- Product Details -->
+                <div class="col-md-6">
+                    <a class="product-link" href="{{ url_for('product', id=featured.id) }}" ><h2>{{ featured.name }}</h2></a>
+                    <p class="fs-6"><strong>Price: Rs {{ featured.price }}</strong></p>
 
-                <!-- Product Description -->
-                <div class="mt-4">
-                    <h5>Description</h5>
-                    <p>
-                        This is the description of the product. It provides details about the product's features, usage, and specifications.
-                    </p>
+                    <!-- Product Description -->
+                    <div class="mt-4">
+                        <h5>Description</h5>
+                        <p>
+                            {{ featured.description }}
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-             <div class="col-md-6">
-                <img src="{{ url_for('static', filename='images/funtoy1.jpeg') }}" alt="Product Image" class="img-fluid">
-            </div>
+                <!-- Product Image -->
+                <div class="col-md-6">
+                    <img src="{{ url_for('static', filename=featured.image_url) }}" alt="{{ featured.name }}" class="img-fluid">
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <p>No featured product available at the moment.</p>
+                </div>
+                {% endif %}
 
-        </div>
+            </div>
         </div>
     </div>
 

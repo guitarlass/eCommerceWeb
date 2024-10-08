@@ -1,0 +1,29 @@
+-- Sample product categories
+INSERT INTO product_category (name, description) VALUES
+('Books', 'A collection of books related to Merlin and Arthurian legends.'),
+('TV Shows', 'Merlin-themed TV shows and series merchandise.'),
+('Fun Items', 'Fun and quirky items related to the Merlin series.');
+
+-- Sample products
+INSERT INTO product (name, price, description, image_url, category_id) VALUES
+('Merlin: The Complete Series DVD', 49.99, 'All seasons of the legendary TV show Merlin on DVD.', 'http://example.com/images/merlin_dvd.jpg', 1),
+('Merlin: The Book of Magic', 19.99, 'A detailed exploration of the magic within the Merlin series.', 'http://example.com/images/merlin_book.jpg', 1),
+('Merlin Wand', 15.99, 'A replica wand from the Merlin series, perfect for casting spells.', 'http://example.com/images/merlin_wand.jpg', 2),
+('Merlin Funko Pop Figure', 12.99, 'Collectible Funko Pop of Merlin character.', 'http://example.com/images/merlin_funko.jpg', 3),
+('Merlin Board Game', 29.99, 'A fun board game that takes you through the adventures of Merlin.', 'http://example.com/images/merlin_boardgame.jpg', 3),
+('Merlin Poster', 9.99, 'A high-quality poster featuring the main characters of Merlin.', 'http://example.com/images/merlin_poster.jpg', 3);
+
+-- Sample users with hashed passwords
+INSERT INTO user (email, password, name) VALUES
+('arthur.pendragons@example.com', '$pbkdf2:sha256:260000$DzPvHnZC$fdc733c957f6eec2bd0ba0e9e3e8f2', 'Arthur Pendragon'),
+('merlin.emrys@example.com', '$pbkdf2:sha256:260000$HF53tJqw$f68a6d7e2a70d00de689709ffb08b3', 'Merlin Emrys'),
+('gwenyvere@example.com', '$pbkdf2:sha256:260000$sdP93Jdz$023a7302898cf7f198d5b07a5c1fef', 'Guinevere'),
+('gaius@example.com', '$pbkdf2:sha256:260000$HiGzXc8K$6f78f6054839eaceb99b4bfbf5e39f', 'Gaius');
+
+-- Sample orders
+INSERT INTO user_order (user_id, total_price, order_date, status) VALUES
+(1, 49.99, '2024-10-01 10:00:00', 'completed'),
+(2, 19.99, '2024-10-02 12:30:00', 'pending'),
+(1, 15.99, '2024-10-03 14:15:00', 'shipped'),
+(3, 29.99, '2024-10-04 09:45:00', 'completed'),
+(4, 12.99, '2024-10-05 11:20:00', 'pending');
