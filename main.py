@@ -73,38 +73,61 @@ with app.app_context():
     db.create_all()
 
 
-@app.template_filter()
-def length(value):
-    return len(value)
+# @app.template_filter()
+# def length(value):
+#     return len(value)
 
 @app.route('/')
 def home():
     featured = db.session.execute(db.select(Product).where(Product.featured == 1)).scalar_one_or_none()
-    return render_template('index.html', featured=featured)
+    recents = db.session.query(Product).limit(4).all()
+    return render_template('index.html', featured=featured, recents=recents)
+
 
 @app.route('/product/<int:id>')
 def product(id):
     product = db.session.query(Product).filter_by(id=id).first_or_404()
     return render_template('product.html', product=product)
 
+
 @app.route('/cart')
 def cart():
-    pass
+    cart_items = session.get('cart', {})
+    products = []
+
+    for product_id, quantity in cart_items.items():
+        print(product_id)
+
+    return render_template('cart.html', product=product)
+
 
 @app.route('/add_to_cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
-    quantity = request.form.get('quantity', type=int, default=1)
+    quantity = request.form.get('quantity', type=int) or 1
+    print(f"Adding {quantity} of product ID {product_id} to the cart.")
 
+    # Check if 'cart' is in the session, if not initialize it
     if 'cart' not in session:
         session['cart'] = {}
 
-    if product_id in session['cart']:
-        session['cart'][product_id] += quantity  # increment quantity
+    # Check if the product is already in the cart
+    if int(product_id) in session['cart']:
+        session['cart'][int(product_id)] += quantity
     else:
-        session['cart'][product_id] = quantity  # add new
+        session['cart'][int(product_id)] = quantity
 
-    session.modified = True  # mark session as modified to save changes
+    # Mark the session as modified to ensure it gets saved
+    session.modified = True
+
+    # Optionally, flash a message to inform the user
+    flash(f"Added {quantity} of product ID {product_id} to the cart.")
+
     return redirect(url_for('home'))
+
+
+@app.route('/remove_from_cart/<int:product_id>')
+def remove_from_cart(product_id):
+    pass
 
 
 @app.route('/login', methods=['GET', 'POST'])

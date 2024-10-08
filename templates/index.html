@@ -69,7 +69,7 @@
                 <!-- Product Details -->
                 <div class="col-md-6">
                     <a class="product-link" href="{{ url_for('product', id=featured.id) }}" ><h2>{{ featured.name }}</h2></a>
-                    <p class="fs-6"><strong>Price: Rs {{ featured.price }}</strong></p>
+                    <p class="fs-6"><strong>Price: $ {{ featured.price }}</strong></p>
 
                     <!-- Product Description -->
                     <div class="mt-4">
@@ -99,22 +99,13 @@
         <div class="col-md-12">
             <h2>Recently Ordered</h2>
             <div class="d-flex justify-content-between overflow-auto">
+                {% for recent in recents %}
                 <div class="p-2">
-                    <img src="{{ url_for('static', filename='images/merlin.jpeg') }}" class="img-fluid" alt="Product 1">
-                    <p class="text-center">Product Title</p>
+                    <img src="{{ url_for('static', filename=recent.image_url) }}" class="img-fluid recent-img pb-3" alt="{{ recent.name }}">
+                    <a href="{{ url_for('product', id=recent.id) }}"><p class="text-center fs-5">{{ recent.name }}</p></a>
+                    <p class="text-center">$ {{ recent.price }}</p>
                 </div>
-                <div class="p-2">
-                    <img src="{{ url_for('static', filename='images/merlin.jpeg') }}" class="img-fluid" alt="Product 2">
-                    <p class="text-center">Product Title</p>
-                </div>
-                <div class="p-2">
-                    <img src="{{ url_for('static', filename='images/merlin.jpeg') }}" class="img-fluid" alt="Product 3">
-                    <p class="text-center">Product Title</p>
-                </div>
-                <div class="p-2">
-                    <img src="{{ url_for('static', filename='images/merlin.jpeg') }}" class="img-fluid" alt="Product 4">
-                    <p class="text-center">Product Title</p>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
