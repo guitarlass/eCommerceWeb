@@ -1,17 +1,17 @@
 -- Sample product categories
-INSERT INTO product_category (name, description) VALUES
-('Books', 'A collection of books related to Merlin and Arthurian legends.'),
-('TV Shows', 'Merlin-themed TV shows and series merchandise.'),
-('Fun Items', 'Fun and quirky items related to the Merlin series.');
+INSERT INTO product_category (name, description, image_url) VALUES
+('Books', 'A collection of books related to Merlin and Arthurian legends.', 'images/books.jpeg'),
+('TV Shows', 'Merlin-themed TV shows and series merchandise.', 'images/dvd.jpg'),
+('Fun Items', 'Fun and quirky items related to the Merlin series.', 'images/funtoy2.jpg');
 
 -- Sample products
 INSERT INTO product (name, price, description, image_url, category_id) VALUES
-('Merlin: The Complete Series DVD', 49.99, 'All seasons of the legendary TV show Merlin on DVD.', 'http://example.com/images/merlin_dvd.jpg', 1),
-('Merlin: The Book of Magic', 19.99, 'A detailed exploration of the magic within the Merlin series.', 'http://example.com/images/merlin_book.jpg', 1),
-('Merlin Wand', 15.99, 'A replica wand from the Merlin series, perfect for casting spells.', 'http://example.com/images/merlin_wand.jpg', 2),
-('Merlin Funko Pop Figure', 12.99, 'Collectible Funko Pop of Merlin character.', 'http://example.com/images/merlin_funko.jpg', 3),
-('Merlin Board Game', 29.99, 'A fun board game that takes you through the adventures of Merlin.', 'http://example.com/images/merlin_boardgame.jpg', 3),
-('Merlin Poster', 9.99, 'A high-quality poster featuring the main characters of Merlin.', 'http://example.com/images/merlin_poster.jpg', 3);
+('Merlin: The Complete Series DVD', 49.99, 'All seasons of the legendary TV show Merlin on DVD.', 'images/dvd.jpg', 1),
+('Merlin: The Book of Magic', 19.99, 'A detailed exploration of the magic within the Merlin series.', 'images/books.jpeg', 1),
+('Merlin Wand', 15.99, 'A replica wand from the Merlin series, perfect for casting spells.', 'images/funtoy1.jpeg', 2),
+('Merlin Funko Pop Figure', 12.99, 'Collectible Funko Pop of Merlin character.', 'images/funtoy2.jpg', 3),
+('Merlin Board Game', 29.99, 'A fun board game that takes you through the adventures of Merlin.', 'images/merlin.jpeg', 3),
+('Merlin Poster', 9.99, 'A high-quality poster featuring the main characters of Merlin.', 'images/funtoy1.jpeg', 3);
 
 -- Sample users with hashed passwords
 INSERT INTO user (email, password, name) VALUES

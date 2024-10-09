@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} Category {% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row my-5">
+        <div class="col-md-12">
+            <h2>Items in {{ category_name }}</h2>
+            <div class="d-flex justify-content-between overflow-auto">
+                {% for product in products %}
+                <div class="col-md-4 p-2">
+                    <img src="{{ url_for('static', filename=product.image_url) }}" class="img-fluid recent-img pb-3" alt="{{ product.name }}">
+                    <a href="{{ url_for('product', id=product.id) }}"><p class="text-center fs-5">{{ product.name }}</p></a>
+                    <p class="text-center">$ {{ product.price }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

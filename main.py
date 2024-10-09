@@ -51,6 +51,7 @@ class Product(db.Model):
 class ProductCategory(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(400), nullable=False)
+    image_url: Mapped[str] = mapped_column(String(500), nullable=False)
     description: Mapped[Text] = mapped_column(Text)
 
 class User(db.Model, UserMixin):
@@ -81,7 +82,8 @@ with app.app_context():
 def home():
     featured = db.session.execute(db.select(Product).where(Product.featured == 1)).scalar_one_or_none()
     recents = db.session.query(Product).limit(4).all()
-    return render_template('index.html', featured=featured, recents=recents)
+    categories = db.session.query(ProductCategory).all()
+    return render_template('index.html', featured=featured, recents=recents, categories=categories)
 
 
 @app.route('/product/<int:id>')
@@ -96,39 +98,53 @@ def cart():
     products = []
 
     for product_id, quantity in cart_items.items():
-        print(product_id)
+        product = db.session.query(Product).filter_by(id=product_id).first()
+        products.append({"procuct": product, "quantity": quantity})
 
-    return render_template('cart.html', product=product)
+    # print(products)
+
+    return render_template('cart.html', products=products)
 
 
 @app.route('/add_to_cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
     quantity = request.form.get('quantity', type=int) or 1
-    print(f"Adding {quantity} of product ID {product_id} to the cart.")
 
-    # Check if 'cart' is in the session, if not initialize it
     if 'cart' not in session:
         session['cart'] = {}
 
-    # Check if the product is already in the cart
-    if int(product_id) in session['cart']:
-        session['cart'][int(product_id)] += quantity
+    if str(product_id) in session['cart']:
+        session['cart'][str(product_id)] += int(quantity)
     else:
-        session['cart'][int(product_id)] = quantity
+        session['cart'][str(product_id)] = int(quantity)
 
-    # Mark the session as modified to ensure it gets saved
+    # mark the session as modified to ensure it gets saved
     session.modified = True
-
-    # Optionally, flash a message to inform the user
-    flash(f"Added {quantity} of product ID {product_id} to the cart.")
-
-    return redirect(url_for('home'))
+    flash(f"Added {quantity} of this product to the cart.")
+    return redirect(url_for('product', id=product_id))
 
 
 @app.route('/remove_from_cart/<int:product_id>')
 def remove_from_cart(product_id):
-    pass
+    if 'cart' in session:
+        if str(product_id) in session['cart']:
+            del session['cart'][str(product_id)] # remove item from the session
+            session.modified = True
+            flash(f"Removed the item from the cart")
+        else:
+            flash(f"Item not added to cart.")
+    else:
+        flash(f"Cart is empty.")
 
+    return redirect(url_for('cart'))
+
+
+@app.route('/category/<int:id>')
+def category(id):
+    products = db.session.query(Product).filter_by(category_id=id).all()
+    category = db.session.query(ProductCategory.name).filter_by(id=id).first()
+    category_name = category[0] if category else None
+    return render_template('category.html', products=products, category_name=category_name)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
