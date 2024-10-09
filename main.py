@@ -146,6 +146,12 @@ def category(id):
     category_name = category[0] if category else None
     return render_template('category.html', products=products, category_name=category_name)
 
+
+@app.route('/shop')
+def shop():
+    products = db.session.query(Product).all()
+    return render_template('shop.html', products=products)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm()

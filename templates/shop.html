@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %} Category {% endblock %}
+{% block title %} Shop {% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row my-5">
         <div class="col-md-12">
-            <h2>Items in {{ category_name }}</h2>
+            <h2>Items in Merlin's Beard</h2>
             <div class="d-flex flex-wrap justify-content-start">
                 {% for product in products %}
                 <div class="col-md-4 p-2 d-flex flex-column align-items-center">
