@@ -1,33 +1,53 @@
 {% extends 'base.html' %}
 
-{% block title %} Product Details {% endblock %}
+{% block title %} Cart {% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <h2>Your Shopping Cart</h2>
     {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flashes">
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-    <div class="row">
-        {% for item in products %}
-            <div class="row">
-                <div class="col-md-7">
-                    <h5><a href="{{ url_for('product', id=item.procuct.id) }}">{{ item.procuct.name }}</a> (Quantity: {{ item.quantity }})</h5>
-                </div>
-                <div class="col-md-3">
-                    <p>Price: Rs {{ item.procuct.price }}</p>
-                </div>
-                <div class="col-md-2">
-                    <a href="{{ url_for('remove_from_cart', product_id=item.procuct.id) }}" class="btn btn-danger">Remove</a>
-                </div>
-            </div>
+    {% if messages %}
+    <ul class="flashes">
+        {% for message in messages %}
+        <li>{{ message }}</li>
         {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <div class="row">
+
+        {% for item in products %}
+        <div class="row">
+            <div class="col-md-7">
+                <h5><a href="{{ url_for('product', id=item.product.id) }}">{{ item.product.name }}</a> (Quantity: {{
+                    item.quantity }})</h5>
+            </div>
+            <div class="col-md-3">
+                <p>Price: Rs {{ item.product.price }}</p>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('remove_from_cart', product_id=item.product.id) }}"
+                   class="btn btn-danger">Remove</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-md-7">
+                <p>Total Amount: </p>  <!-- Display the total amount -->
+            </div>
+            <div class="col-md-3">
+                <p>Rs {{ tot_amount }}</p>  <!-- Display the total amount -->
+            </div>
+            <div class="col-md-2">
+                <form action="{{ url_for('checkout') }}" method="POST">
+                    <div class="mb-3">
+                        <input type="hidden" id="amount" name="amount" value="{{ tot_amount }}">
+                    </div>
+                    <button type="submit" class="btn btn-warning">Checkout</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

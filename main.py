@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify
 from flask_bootstrap import Bootstrap5
 import os
 from flask_sqlalchemy import SQLAlchemy
@@ -9,13 +9,20 @@ from flask_login import UserMixin, login_user, LoginManager, current_user, logou
 from forms import LoginForm, RegisterForm
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+import stripe
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "merlinsbeard-com"
 Bootstrap5(app)
 
+stripe.api_key = "sk_test_51Q7YfnRtjJuHAIxbnhf1xGlExuN81GvQfC890YD9XjRzVyT3IEkzV80RxZgl4RjgXQ0FkLSjG14U9BdB5dpLbqRT00LTQgMfoq"  # os.getenv('STRIPE_SECRET_KEY')
+
+app.config[
+    'STRIPE_PUBLIC_KEY'] = "pk_test_51Q7YfnRtjJuHAIxbvc9VMjBxfhsx91ImF912hd5p4KAWZWVXQxNXnjAhtOaJJFBJr6iV99YSqLiTRku41X0uHXyr00OzX57m3B"  # os.getenv('STRIPE_PUBLIC_KEY')
+
 login_manager = LoginManager()
 login_manager.init_app(app)
+
 
 @login_manager.user_loader
 def user_login(user_id):
@@ -44,15 +51,16 @@ class Product(db.Model):
     featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     category_id: Mapped[int] = mapped_column(Integer, ForeignKey('product_category.id'), nullable=False)
 
-
     def __repr__(self):
         return f'<Product {self.name}>'
+
 
 class ProductCategory(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(400), nullable=False)
     image_url: Mapped[str] = mapped_column(String(500), nullable=False)
     description: Mapped[Text] = mapped_column(Text)
+
 
 class User(db.Model, UserMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -99,11 +107,18 @@ def cart():
 
     for product_id, quantity in cart_items.items():
         product = db.session.query(Product).filter_by(id=product_id).first()
-        products.append({"procuct": product, "quantity": quantity})
+        if product:  # Ensure the product exists
+            products.append({"product": product, "quantity": quantity})
 
-    # print(products)
+    tot_amount = 0.0
+    for item in products:
+        # Ensure price is treated as float to prevent TypeError
+        price = float(item['product'].price) if item['product'] else 0.0
+        quantity = item['quantity']
+        tot_amount += (price * quantity)
 
-    return render_template('cart.html', products=products)
+    print(tot_amount)  # For debugging
+    return render_template('cart.html', products=products, tot_amount=tot_amount)  # Pass total amount to template
 
 
 @app.route('/add_to_cart/<int:product_id>', methods=['POST'])
@@ -128,7 +143,7 @@ def add_to_cart(product_id):
 def remove_from_cart(product_id):
     if 'cart' in session:
         if str(product_id) in session['cart']:
-            del session['cart'][str(product_id)] # remove item from the session
+            del session['cart'][str(product_id)]  # remove item from the session
             session.modified = True
             flash(f"Removed the item from the cart")
         else:
@@ -137,6 +152,33 @@ def remove_from_cart(product_id):
         flash(f"Cart is empty.")
 
     return redirect(url_for('cart'))
+
+@login_required
+@app.route('/checkout', methods=['POST'])
+def checkout():
+    if current_user:
+        amount = 0.0
+        if request.method == 'POST':
+            try:
+                # # Get product details (could also be passed from the frontend)
+                amount = float(request.form.get('amount')) # $50.00 in cents
+                amount_in_cents = int(amount * 100)
+                # Create a PaymentIntent on the server
+                intent = stripe.PaymentIntent.create(
+                    amount=amount_in_cents,
+                    currency='usd',
+                    payment_method_types=['card'],
+                    receipt_email=current_user.email,
+                )
+
+                return jsonify({
+                    'clientSecret': intent['client_secret']
+                })
+
+            except Exception as e:
+                return jsonify(error=str(e)), 403
+
+        return render_template('checkout.html', public_key=app.config['STRIPE_PUBLIC_KEY'], amount=amount)
 
 
 @app.route('/category/<int:id>')
@@ -151,6 +193,7 @@ def category(id):
 def shop():
     products = db.session.query(Product).all()
     return render_template('shop.html', products=products)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

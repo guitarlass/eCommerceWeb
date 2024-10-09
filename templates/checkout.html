@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %} Shop {% endblock %}
+
+{% block content %}
+<h1>Checkout</h1>
+
+    <form id="payment-form">
+        <div id="card-element"><!-- Stripe.js injects the Card Element here --></div>
+        <button type="submit" id="submit">Pay ${{ amount }}</button>
+        <div id="error-message"></div> <!-- Display errors here -->
+    </form>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        var stripe = Stripe("{{ public_key }}");
+        var elements = stripe.elements();
+        var cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const { paymentIntent, error } = await stripe.confirmCardPayment("{{ client_secret }}", {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        email: 'customer@example.com',
+                    },
+                }
+            });
+
+            if (error) {
+                document.getElementById('error-message').textContent = error.message;
+            } else {
+                alert('Payment successful!');
+            }
+        });
+    </script>
+
+{% endblock %}
