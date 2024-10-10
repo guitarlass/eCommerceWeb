@@ -24,6 +24,8 @@ app.config[
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+login_manager.login_view = 'login'
+
 
 @login_manager.user_loader
 def user_login(user_id):
@@ -42,7 +44,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ecom.db'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///my_database.db'  # Relative path
 
 db.init_app(app)
-
 
 
 class Product(db.Model):
@@ -156,33 +157,52 @@ def remove_from_cart(product_id):
 
     return redirect(url_for('cart'))
 
-@flask_login.login_required # <- THIS DOESNT WORK
+
+# @flask_login.login_required # <- THIS DOESNT WORK
 @app.route('/checkout', methods=['GET', 'POST'])
+@flask_login.login_required
 def checkout():
-    if current_user.is_anonymous:
-        return redirect(url_for('login'))
     amount = 0.0
-    if request.method == 'POST' and request.form.get('process') == 'yes':
-        try:
-            # # Get product details (could also be passed from the frontend)
-            amount = float(request.form.get('amount')) # $50.00 in cents
-            amount_in_cents = int(amount * 100)
-            # Create a PaymentIntent on the server
-            intent = stripe.PaymentIntent.create(
-                amount=amount_in_cents,
-                currency='usd',
-                payment_method_types=['card'],
-                receipt_email=current_user.email,
-            )
+    client_secret = None
+    if request.method == 'POST':
+        if request.form.get('process') == 'no':
+            try:
+                # # Get product details (could also be passed from the frontend)
+                amount = float(request.form.get('amount'))  # $50.00 in cents
+                amount_in_cents = int(amount * 100)
+                # Create a PaymentIntent on the server
+                intent = stripe.PaymentIntent.create(
+                    amount=amount_in_cents,
+                    currency='usd',
+                    payment_method_types=['card'],
+                    receipt_email=current_user.email,
+                )
 
-            return jsonify({
-                'clientSecret': intent['client_secret']
-            })
+                client_secret = intent['client_secret']
 
-        except Exception as e:
-            return jsonify(error=str(e)), 403
+            except Exception as e:
+                return jsonify(error=str(e)), 403
 
-    return render_template('checkout.html', public_key=app.config['STRIPE_PUBLIC_KEY'], amount=amount)
+    return render_template('checkout.html', public_key=app.config['STRIPE_PUBLIC_KEY'], amount=amount,
+                           client_secret=client_secret)
+
+
+@app.route('/orders', methods=['POST'])
+@flask_login.login_required
+def orders():
+    try:
+        order_date = datetime.datetime.now().date()
+        # order_date= order_date.
+        new_order = Order(total_price=request.form.get("amount"), user_id=current_user.id, order_date=order_date,
+                          status=request.form.get("status"))
+        db.session.add(new_order)
+        db.session.commit()
+        flash("successfully placed the order")
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+    orders = db.session.query(Order).all()
+
+    return render_template('order.html', orders=orders)
 
 
 @app.route('/category/<int:id>')

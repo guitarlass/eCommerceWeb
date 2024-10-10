@@ -7,9 +7,8 @@
 
     <form id="payment-form">
         <div id="card-element"><!-- Stripe.js injects the Card Element here --></div>
-        <button type="submit" id="submit">Pay ${{ amount }}</button>
+        <button type="submit" id="submit" class="btn btn-warning">Pay ${{ amount }}</button>
         <input type="hidden" id="amount" name="amount" value="{{ amount }}">
-        <input type="hidden" name="process" value="yes" />
         <div id="error-message"></div> <!-- Display errors here -->
     </form>
 
@@ -30,7 +29,7 @@
                 payment_method: {
                     card: cardElement,
                     billing_details: {
-                        email: 'customer@example.com',
+                        email: '{{ current_user.email }}',
                     },
                 }
             });
@@ -38,6 +37,14 @@
             if (error) {
                 document.getElementById('error-message').textContent = error.message;
             } else {
+                var amount = document.getElementById('amount').value;
+                var formData = new FormData();
+                formData.append('amount', amount);
+                formData.append('status', 'confirmed');
+                 fetch('/orders', {
+                    method: 'POST',
+                    body: formData
+                });
                 alert('Payment successful!');
             }
         });
