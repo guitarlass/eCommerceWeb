@@ -8,6 +8,8 @@
     <form id="payment-form">
         <div id="card-element"><!-- Stripe.js injects the Card Element here --></div>
         <button type="submit" id="submit">Pay ${{ amount }}</button>
+        <input type="hidden" id="amount" name="amount" value="{{ amount }}">
+        <input type="hidden" name="process" value="yes" />
         <div id="error-message"></div> <!-- Display errors here -->
     </form>
 

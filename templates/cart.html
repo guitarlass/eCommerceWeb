@@ -43,6 +43,7 @@
                 <form action="{{ url_for('checkout') }}" method="POST">
                     <div class="mb-3">
                         <input type="hidden" id="amount" name="amount" value="{{ tot_amount }}">
+                        <input type="hidden" name="process" value="no" />
                     </div>
                     <button type="submit" class="btn btn-warning">Checkout</button>
                 </form>

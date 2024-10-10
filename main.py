@@ -1,3 +1,4 @@
+import flask_login
 from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify
 from flask_bootstrap import Bootstrap5
 import os
@@ -26,7 +27,8 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def user_login(user_id):
-    return db.get_or_404(User, user_id)
+    return db.session.get(User, user_id)
+    # return db.get_or_404(User, user_id)
 
 
 class Base(DeclarativeBase):
@@ -40,6 +42,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ecom.db'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///my_database.db'  # Relative path
 
 db.init_app(app)
+
 
 
 class Product(db.Model):
@@ -117,7 +120,7 @@ def cart():
         quantity = item['quantity']
         tot_amount += (price * quantity)
 
-    print(tot_amount)  # For debugging
+    # print(tot_amount)  # For debugging
     return render_template('cart.html', products=products, tot_amount=tot_amount)  # Pass total amount to template
 
 
@@ -153,32 +156,33 @@ def remove_from_cart(product_id):
 
     return redirect(url_for('cart'))
 
-@login_required
-@app.route('/checkout', methods=['POST'])
+@flask_login.login_required # <- THIS DOESNT WORK
+@app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
-    if current_user:
-        amount = 0.0
-        if request.method == 'POST':
-            try:
-                # # Get product details (could also be passed from the frontend)
-                amount = float(request.form.get('amount')) # $50.00 in cents
-                amount_in_cents = int(amount * 100)
-                # Create a PaymentIntent on the server
-                intent = stripe.PaymentIntent.create(
-                    amount=amount_in_cents,
-                    currency='usd',
-                    payment_method_types=['card'],
-                    receipt_email=current_user.email,
-                )
+    if current_user.is_anonymous:
+        return redirect(url_for('login'))
+    amount = 0.0
+    if request.method == 'POST' and request.form.get('process') == 'yes':
+        try:
+            # # Get product details (could also be passed from the frontend)
+            amount = float(request.form.get('amount')) # $50.00 in cents
+            amount_in_cents = int(amount * 100)
+            # Create a PaymentIntent on the server
+            intent = stripe.PaymentIntent.create(
+                amount=amount_in_cents,
+                currency='usd',
+                payment_method_types=['card'],
+                receipt_email=current_user.email,
+            )
 
-                return jsonify({
-                    'clientSecret': intent['client_secret']
-                })
+            return jsonify({
+                'clientSecret': intent['client_secret']
+            })
 
-            except Exception as e:
-                return jsonify(error=str(e)), 403
+        except Exception as e:
+            return jsonify(error=str(e)), 403
 
-        return render_template('checkout.html', public_key=app.config['STRIPE_PUBLIC_KEY'], amount=amount)
+    return render_template('checkout.html', public_key=app.config['STRIPE_PUBLIC_KEY'], amount=amount)
 
 
 @app.route('/category/<int:id>')
