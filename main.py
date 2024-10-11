@@ -13,13 +13,12 @@ import datetime
 import stripe
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "merlinsbeard-com"
+app.config['SECRET_KEY'] = "merlinsbeard-com" # os.getenv('STRIPE_SECRET_KEY')
 Bootstrap5(app)
 
-stripe.api_key = "sk_test_51Q7YfnRtjJuHAIxbnhf1xGlExuN81GvQfC890YD9XjRzVyT3IEkzV80RxZgl4RjgXQ0FkLSjG14U9BdB5dpLbqRT00LTQgMfoq"  # os.getenv('STRIPE_SECRET_KEY')
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')  #
 
-app.config[
-    'STRIPE_PUBLIC_KEY'] = "pk_test_51Q7YfnRtjJuHAIxbvc9VMjBxfhsx91ImF912hd5p4KAWZWVXQxNXnjAhtOaJJFBJr6iV99YSqLiTRku41X0uHXyr00OzX57m3B"  # os.getenv('STRIPE_PUBLIC_KEY')
+app.config['STRIPE_PUBLIC_KEY'] = os.getenv('STRIPE_PUBLIC_KEY')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
