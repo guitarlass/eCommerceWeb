@@ -50,10 +50,13 @@ class Product(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(400), nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
-    description: Mapped[text] = mapped_column(Text)
+    description: Mapped[Text] = mapped_column(Text)  # Text is correct
     image_url: Mapped[str] = mapped_column(String(500))
     featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     category_id: Mapped[int] = mapped_column(Integer, ForeignKey('product_category.id'), nullable=False)
+
+    # defined later may not be used in the system
+    category = db.relationship('ProductCategory', back_populates="products")
 
     def __repr__(self):
         return f'<Product {self.name}>'
@@ -65,12 +68,18 @@ class ProductCategory(db.Model):
     image_url: Mapped[str] = mapped_column(String(500), nullable=False)
     description: Mapped[Text] = mapped_column(Text)
 
+    # defined later may not be used in the system
+    products = db.relationship("Product", back_populates="category")
+
 
 class User(db.Model, UserMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(300), nullable=False)
     name: Mapped[str] = mapped_column(String(350), nullable=False)
+
+    # defined later may not be used in the system
+    orders = db.relationship('Order', back_populates='user')
 
 
 class Order(db.Model):
@@ -80,6 +89,22 @@ class Order(db.Model):
     total_price: Mapped[float] = mapped_column(Float, nullable=False)
     order_date: Mapped[datetime] = mapped_column(DateTime)
     status: Mapped[str] = mapped_column(String(50), default="pending")
+
+    # defined later may not be used in the system
+    order_items = db.relationship('OrderItem', back_populates='order')
+    user = db.relationship('User', back_populates='orders')
+
+
+class OrderItem(db.Model):
+    __tablename__ = "user_order_item"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('product.id'), nullable=False)
+    quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    price: Mapped[float] = mapped_column(Float, nullable=False)
+    order_id: Mapped[int] = mapped_column(Integer, ForeignKey('user_order.id'), nullable=False)
+
+    order = db.relationship('Order', back_populates='order_items')
+    product = db.relationship('Product')
 
 
 with app.app_context():
@@ -119,7 +144,8 @@ def cart():
         # Ensure price is treated as float to prevent TypeError
         price = float(item['product'].price) if item['product'] else 0.0
         quantity = item['quantity']
-        tot_amount += (price * quantity)
+        tot_amount += round(price * quantity, 2)
+
 
     # print(tot_amount)  # For debugging
     return render_template('cart.html', products=products, tot_amount=tot_amount)  # Pass total amount to template
@@ -187,29 +213,74 @@ def checkout():
                            client_secret=client_secret)
 
 
-@app.route('/orders', methods=['POST'])
+@app.route('/place_order', methods=['POST'])
 @flask_login.login_required
-def orders():
+def place_order():
+    new_order_id = None
+    total_amount = float(request.form.get("amount", 0.0))
+    status = request.form.get("status", "pending")
+
     try:
-        order_date = datetime.datetime.now().date()
-        # order_date= order_date.
-        new_order = Order(total_price=request.form.get("amount"), user_id=current_user.id, order_date=order_date,
-                          status=request.form.get("status"))
+        order_date = datetime.datetime.now().replace(second=0, microsecond=0)
+
+        new_order = Order(total_price=total_amount, user_id=current_user.id, order_date=order_date,
+                          status=status)
         db.session.add(new_order)
         db.session.commit()
-        flash("successfully placed the order")
-    except Exception as e:
-        return jsonify(error=str(e)), 403
-    orders = db.session.query(Order).all()
 
-    return render_template('order.html', orders=orders)
+        new_order_id = new_order.id
+        cart_items = session.get('cart', {})
+
+        cart_items = session.get('cart', {})
+
+        for product_id, quantity in cart_items.items():
+            product_price = db.session.scalar(db.select(Product.price).where(Product.id==product_id))
+
+            if product_price is None:
+                raise ValueError(f"Product with id {product_id} not found or price is empty.")
+
+            if quantity <= 0:
+                raise ValueError(f"Quantity for product {product_id} must be positive.")
+
+            new_order_item = OrderItem(
+                product_id=product_id,
+                price=product_price,
+                quantity=quantity,
+                order_id=new_order_id
+            )
+            db.session.add(new_order_item)
+
+        db.session.commit()
+        flash("successfully placed the order")
+
+        session.pop('cart', None)  # Removes the 'cart' key from the session
+
+        flash("Your cart has been emptied.")
+
+        return jsonify(order_id=new_order_id)
+
+    except Exception as e:
+        db.session.rollback()  # Rollback the session in case of error
+        print(f"Error: {str(e)}")
+        flash("An error occurred while placing your order. Please try again.")
+        return jsonify(error=str(e)), 403
+
+
+@app.route('/order_confirmation/<int:order_id>')
+def order_confirmation(order_id):
+    order = db.session.query(Order).filter_by(id=order_id).first()
+    payment_method = "Card"
+    # send any emails
+    return render_template('order.html', order=order,
+                           payment_method=payment_method)
 
 
 @app.route('/category/<int:id>')
 def category(id):
     products = db.session.query(Product).filter_by(category_id=id).all()
     category = db.session.query(ProductCategory.name).filter_by(id=id).first()
-    category_name = category[0] if category else None
+    category_name = db.session.scalar(db.select(ProductCategory.name).where(ProductCategory.id == id))
+    # category_name = category[0] if category else None
     return render_template('category.html', products=products, category_name=category_name)
 
 
@@ -244,19 +315,26 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     register_form = RegisterForm()
-    user_exists = db.session.execute((db.select(User).where(User.email == register_form.email.data)))
-    if user_exists:
-        flash("User already registered! Please login.")
+
     if register_form.validate_on_submit():
-        new_user = User(name=register_form.name.data,
-                        email=register_form.email.data,
-                        password=generate_password_hash(register_form.password.data,
-                                                        method="pbkdf2:sha256",
-                                                        salt_length=8))
+        existing_user = db.session.scalar(db.select(User).where(User.email == register_form.email.data))
+        if existing_user:
+            flash("User already registered! Please login.")
+            return redirect(url_for("login"))
+
+        new_user = User(
+            name=register_form.name.data,
+            email=register_form.email.data,
+            password=generate_password_hash(register_form.password.data,
+                                            method="pbkdf2:sha256", salt_length=8)
+        )
+
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        return redirect(url_for("login"))
+
+        return redirect(url_for("home"))  # Redirect to the home or dashboard instead of login
+
     return render_template("register.html", form=register_form)
 
 

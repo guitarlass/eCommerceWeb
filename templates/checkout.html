@@ -35,17 +35,26 @@
             });
 
             if (error) {
-                document.getElementById('error-message').textContent = error.message;
+            document.getElementById('error-message').textContent = error.message;
             } else {
                 var amount = document.getElementById('amount').value;
                 var formData = new FormData();
                 formData.append('amount', amount);
                 formData.append('status', 'confirmed');
-                 fetch('/orders', {
+
+                const response = await fetch('/place_order', {
                     method: 'POST',
                     body: formData
                 });
-                alert('Payment successful!');
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Redirect to the order confirmation
+                    window.location.href = `/order_confirmation/${data.order_id}`;
+                } else {
+                    const errorData = await response.json();
+                    document.getElementById('error-message').textContent = errorData.error; // Display error message
+                }
             }
         });
     </script>
