@@ -1,20 +1,47 @@
-<footer class="bg-light text-center text-lg-start mt-5">
-    <div class="container p-4">
+<footer class="bg-dark text-white pt-4 pb-2">
+    <div class="container">
         <div class="row">
-            <div class="col-lg-6 col-md-12 mb-4">
-                <h5 class="text-uppercase">Marlin's Beard Store</h5>
-                <p>
-                    <a href="{{ url_for('home') }}" class="text-reset">Home</a> |
-                    <a href="{{ url_for('shop') }}" class="text-reset">Shop</a>
-
-                </p>
+            <!-- Company Info Column -->
+            <div class="col-md-4 mb-3">
+                <h5>About Us</h5>
+                <p>Merlin's Magic E-Commerce is your go-to store for premium Merlin products. We offer a wide range of collections to choose from dvds, books to fancy toys. </p>
             </div>
-            <div class="col-lg-6 col-md-12 mb-4">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="width: 50px;">
+            <!-- Quick Links Column -->
+            <div class="col-md-4 mb-3">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ url_for('home') }}" class="text-white">Home</a></li>
+                    <li><a href="{{ url_for('shop') }}" class="text-white">Shop</a></li>
+                    <li><a href="{{ url_for('contact') }}" class="text-white">Contact</a></li>
+                </ul>
+            </div>
+            <!-- Social Media Column -->
+            <div class="col-md-4 mb-3">
+                <h5>Follow Us</h5>
+                <div class="d-flex">
+                    <a href="https://facebook.com" class="text-white me-3" target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com" class="text-white me-3" target="_blank">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com" class="text-white" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
             </div>
         </div>
-        <div class="text-center p-3">
-            &copy; 2024 Marlin's Beard Store
+
+        <div class="row mt-4">
+            <!-- Legal Links Column -->
+            <div class="col-12 text-center">
+                <ul class="list-unstyled d-flex justify-content-center">
+                    <li><a href="" class="text-white mx-3">Privacy Policy</a></li>
+                    <li><a href="" class="text-white mx-3">Terms of Service</a></li>
+                    <li><a href="" class="text-white mx-3">FAQ</a></li>
+                </ul>
+                <p class="text-muted mt-3">&copy; {{ current_year }} Merlin's Magic E-Commerce. All Rights Reserved.</p>
+            </div>
         </div>
     </div>
 </footer>

@@ -20,3 +20,57 @@ footer {
     width: 600px;
     height: 200px;
 }
+
+/*start additional*/
+/* Custom Styling for Header */
+.top-bar {
+    background-color: #343a40; /* Dark background */
+}
+
+.top-bar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.top-bar a:hover {
+    color: #f1c40f; /* Golden hover effect */
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #555;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #007bff; /* Blue hover effect */
+}
+
+.navbar-light {
+    background-color: #f8f9fa;
+}
+
+/*end additional*/
+
+/*start additional for footer*/
+/* Footer Custom Styling */
+footer a {
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #f1c40f; /* Golden hover effect */
+}
+
+footer i {
+    font-size: 1.5rem; /* Icon size */
+}
+
+footer .list-unstyled {
+    padding-left: 0;
+}
+
+footer .list-unstyled li {
+    margin-bottom: 10px;
+}
+
+/*end additional for footer*/

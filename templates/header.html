@@ -1,59 +1,72 @@
 <header>
-        <div class="top-bar py-2">
-            <div class="container">
-                <div class="row justify-content-end">
-                    {% if current_user.is_authenticated %}
-                    <div class="col-auto">
-                        <span>Hello {{ current_user.name }}!</span>
-                    </div>
-                    <div class="col-auto">
-                        <a href="{{ url_for('cart')}}">Cart ({% if 'cart' in session: %}{{ session.get('cart') | length }}{% else %}0{% endif %})</a>
-                    </div>
-                    <div class="col-auto">
-                        <a href="{{ url_for('logout')}}">Logout</a>
-                    </div>
-                    {% else %}
-                    <div class="col-auto">
-                        <a href="{{ url_for('cart')}}">Cart ({% if 'cart' in session: %}{{ session.get('cart') | length }}{% else %}0{% endif %})</a>
-                    </div>
-                    <div class="col-auto">
-                        <a href="{{ url_for('login')}}">Login</a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Logo and Navigation Bar -->
+    <!-- Top Bar -->
+    <div class="top-bar py-2 bg-dark text-white">
         <div class="container">
-            <div class="row align-items-center">
-                <!-- Logo -->
-                <div class="col-md-4">
-                    <a href="{{ url_for('home') }}">
-                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="img-fluid">
+            <div class="row justify-content-end">
+                {% if current_user.is_authenticated %}
+                <div class="col-auto">
+                    <span>Welcome, {{ current_user.name }}!</span>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ url_for('cart') }}" class="text-white">
+                        Cart ({% if 'cart' in session %}{{ session.get('cart') | length }}{% else %}0{% endif %})
                     </a>
                 </div>
-                <!-- Site Name -->
-                <div class="col-md-8 text-right">
-                    <h1>Merlin's Beard E-Commerce Web Store</h1>
+                <div class="col-auto">
+                    <a href="{{ url_for('logout') }}" class="text-white">Logout</a>
                 </div>
+                {% else %}
+                <div class="col-auto">
+                    <a href="{{ url_for('cart') }}" class="text-white">
+                        Cart ({% if 'cart' in session %}{{ session.get('cart') | length }}{% else %}0{% endif %})
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ url_for('login') }}" class="text-white">Login</a>
+                </div>
+                {% endif %}
             </div>
         </div>
+    </div>
 
-        <!-- Main Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container">
-                <ul class="navbar-nav">
+    <!-- Logo and Site Title -->
+    <div class="container my-4">
+        <div class="row align-items-center">
+            <!-- Logo -->
+            <div class="col-md-4">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="img-fluid" style="max-height: 200px;">
+                </a>
+            </div>
+            <!-- Site Title -->
+            <div class="col-md-8 text-md-right text-center">
+                <h1 class="display-4">Merlin's Magic E-Commerce</h1>
+                <p class="lead text-muted">Your one-stop store for premium Merlin products</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                        <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('shop') }}">Shop</a>
                     </li>
-<!--                    <li class="nav-item">-->
-<!--                        <a class="nav-link" href="/contact">Contact</a>-->
-<!--                    </li>-->
+                    <!-- Optional Contact Link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+                    </li>
                 </ul>
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>

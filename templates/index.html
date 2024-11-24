@@ -4,110 +4,70 @@
 {% block content %}
 <div class="container my-4">
 
-    <div class="album py-5 bg-body-tertiary">
+
+    <!-- Categories Section -->
+    <div class="album py-5">
         <div class="container">
-
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-
+            <h2 class="text-center mb-4">Shop by Category</h2>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
                 {% for category in categories %}
                 <div class="col">
-                    <div class="card shadow-sm">
-                        <img class="bd-placeholder-img card-img-top"
-                             src="{{ url_for('static', filename=category.image_url) }}" width="100%" height="225"
-                             role="img" aria-label="Placeholder: Thumbnail"/>
+                    <div class="card shadow-sm border-0">
+                        <img class="card-img-top rounded"
+                             src="{{ url_for('static', filename=category.image_url) }}"
+                             alt="{{ category.name }}">
                         <div class="card-body">
-                            <h3>{{ category.name }}</h3>
-                            <p class="card-text">{{ category.description}}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ url_for('category', id=category.id) }}" class="btn btn-primary w-100">View</a>
-                            </div>
+                            <h5 class="card-title text-center">{{ category.name }}</h5>
+                            <p class="card-text text-muted">{{ category.description }}</p>
+                            <a href="{{ url_for('category', id=category.id) }}"
+                               class="btn btn-outline-primary btn-block">View</a>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
-<!--                <div class="col">-->
-<!--                    <div class="card shadow-sm">-->
-<!--                        <img class="bd-placeholder-img card-img-top"-->
-<!--                             src="{{ url_for('static', filename='images/Merlin.jpeg') }}" width="100%" height="225"-->
-<!--                             role="img" aria-label="Placeholder: Thumbnail"/>-->
-<!--                        <div class="card-body">-->
-<!--                            <h3>Tv</h3>-->
-<!--                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to-->
-<!--                                additional content. This content is a little bit longer.</p>-->
-<!--                            <div class="d-flex justify-content-between align-items-center">-->
-<!--                                <button type="button" class="btn btn-primary w-100">View</button>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="col">-->
-<!--                    <div class="card shadow-sm">-->
-<!--                        <img class="bd-placeholder-img card-img-top"-->
-<!--                             src="{{ url_for('static', filename='images/funtoy2.jpg') }}" width="100%" height="225"-->
-<!--                             role="img" aria-label="Placeholder: Thumbnail"/>-->
-<!--                        <div class="card-body">-->
-<!--                            <h3>Fun Items</h3>-->
-<!--                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to-->
-<!--                                additional content. This content is a little bit longer.</p>-->
-<!--                            <div class="d-flex justify-content-between align-items-center">-->
-<!--                                <button type="button" class="btn btn-primary w-100">View</button>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-
             </div>
         </div>
     </div>
 
     <!-- Featured Product -->
     <div class="container mt-5">
-        <div class="col-md-12">
-            <h2 class="featured-text text-center py-2">Featured</h2>
-            <div class="row">
-
-                {% if featured %}
-                <!-- Product Details -->
+        <div class="text-center py-4 bg-light rounded">
+            <h2 class="mb-3">Featured Product</h2>
+            {% if featured %}
+            <div class="row align-items-center">
                 <div class="col-md-6">
-                    <a class="product-link" href="{{ url_for('product', id=featured.id) }}" ><h2>{{ featured.name }}</h2></a>
-                    <p class="fs-6"><strong>Price: $ {{ featured.price }}</strong></p>
-
-                    <!-- Product Description -->
-                    <div class="mt-4">
-                        <h5>Description</h5>
-                        <p>
-                            {{ featured.description }}
-                        </p>
-                    </div>
+                    <img src="{{ url_for('static', filename=featured.image_url) }}"
+                         alt="{{ featured.name }}"
+                         class="img-fluid rounded shadow">
                 </div>
-
-                <!-- Product Image -->
                 <div class="col-md-6">
-                    <img src="{{ url_for('static', filename=featured.image_url) }}" alt="{{ featured.name }}" class="img-fluid">
+                    <h3>{{ featured.name }}</h3>
+                    <p class="text-success fs-5"><strong>$ {{ featured.price }}</strong></p>
+                    <p>{{ featured.description }}</p>
+                    <a href="{{ url_for('product', id=featured.id) }}" class="btn btn-primary">Shop Now</a>
                 </div>
-                {% else %}
-                <div class="col-12">
-                    <p>No featured product available at the moment.</p>
-                </div>
-                {% endif %}
-
             </div>
+            {% else %}
+            <p>No featured product available at the moment.</p>
+            {% endif %}
         </div>
     </div>
 
-    <!-- Recently Ordered Items -->
-    <div class="row my-5">
-        <div class="col-md-12">
-            <h2>Recently Ordered</h2>
-            <div class="d-flex justify-content-between overflow-auto">
-                {% for recent in recents %}
-                <div class="p-2">
-                    <img src="{{ url_for('static', filename=recent.image_url) }}" class="img-fluid recent-img pb-3" alt="{{ recent.name }}">
-                    <a href="{{ url_for('product', id=recent.id) }}"><p class="text-center fs-5">{{ recent.name }}</p></a>
-                    <p class="text-center">$ {{ recent.price }}</p>
+    <!-- Recently Ordered Section -->
+    <div class="my-5">
+        <h2 class="text-center mb-4">Recently Ordered</h2>
+        <div class="d-flex justify-content-start overflow-auto">
+            {% for recent in recents %}
+            <div class="card me-3" style="width: 100%;">
+                <img src="{{ url_for('static', filename=recent.image_url) }}"
+                     class="card-img-top rounded"
+                     alt="{{ recent.name }}">
+                <div class="card-body text-center">
+                    <h6 class="card-title">{{ recent.name }}</h6>
+                    <p class="text-muted">$ {{ recent.price }}</p>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
     </div>
 </div>

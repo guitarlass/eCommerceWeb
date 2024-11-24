@@ -337,5 +337,9 @@ def register():
     return render_template("register.html", form=register_form)
 
 
+@app.route('/contact')
+def contact():
+    pass
+
 if __name__ == '__main__':
     app.run(debug=True)
